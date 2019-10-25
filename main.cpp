@@ -1,12 +1,10 @@
 #include "MatrixObj.h"
-int main() {
-    /*Указываем размер матрицы(n) и блока (r)*/
-    std::size_t n = 10;
-    std::size_t r = 7;
+int main(){
+    MatrixObj *obj = new MatrixObj{1024,16};
 
-    MatrixObj *obj = new MatrixObj(n,r); /*Создаем обьект*/
-    obj->setAllMatrices(); /*Заполняем все матрицы*/
-    obj->runBlockLU(); /*Запускаем блочное LU*/
-    obj->matrixMultiplication(); /*LU = resMatrix*/
-    obj->countError(); /*initialMatrix - resMatrix*/
+    obj->setAllMatrices();
+    obj->Parallel_runBlockLU_AllInA();
+    obj->matrixMultiplication_AllInA();
+    obj->countError();
+
 }

@@ -22,7 +22,7 @@ void MatrixObj::setAllMatrices(){
         }
 };
 
-void MatrixObj::getMatrix(double *Matrix){
+void MatrixObj::getMatrix(double *Matrix) const{
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             std::cout << Matrix[i*n + j] << " ";
@@ -32,7 +32,7 @@ void MatrixObj::getMatrix(double *Matrix){
     std::cout<<std::endl;
 };
 
-void MatrixObj::getAllMatrices(){
+void MatrixObj::getAllMatrices() const{
     std::cout<<"A Matrix:"<<std::endl;
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
@@ -57,6 +57,14 @@ void MatrixObj::getAllMatrices(){
         std::cout<<std::endl;
     }
     std::cout<<std::endl;
+    std::cout<<"Res Matrix:"<<std::endl;
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            std::cout << resMatrix[i*n + j] << " ";
+        }
+        std::cout<<std::endl;
+    }
+    std::cout<<std::endl;
 };
 
 void MatrixObj::matrixMultiplication(){
@@ -67,18 +75,48 @@ void MatrixObj::matrixMultiplication(){
             }
 };
 
-void MatrixObj::matrixMultiplicationAllInA(){
-    for(int i = 0; i < n; i++)
-        for(int j = 0; j < n; j++)
-            for (int k = 0; k < n; ++k) {
-                resMatrix[i*n+j] += A[i*n+k]*A[k*n+j];
+void MatrixObj::matrixMultiplication_AllInA() {
+        for (int i = 0; i < n; i++){
+            for (int j = 0; j <= i - 1; j++){
+                for (int k = 0; k <=j; k++){
+                    resMatrix[i * n + j] += A[i * n + k] * A[k * n + j];
+                }
             }
+            for (int j = i; j < n; j++){
+                for (int k = 0; k < i; k++){
+                    resMatrix[i * n + j] += A[i * n + k] * A[k * n + j];
+                }
+                resMatrix[i * n + j] += A[i * n + j];
+            }
+        }
 };
 
-void MatrixObj::countError() {
+void MatrixObj::countError() const{
     double temp = 0.0;
     for (int i = 0; i < n*n; ++i) {
         temp += abs(initialMatrix[i]) - abs(resMatrix[i]);
     }
     std::cout << "Ошибка вычислений равна " << temp << std::endl;
 };
+
+void MatrixObj::setAMatrixFromFile(std::string fileName){
+    auto fileNamee = "/Users/kola/Desktop/LAB/inputFile.txt";
+    std::ifstream inputFile(fileName,std::ios_base::in);
+    for(std::size_t i = 0; i < N; i++)
+    {
+        inputFile >> A[i];
+        initialMatrix[i] = A[i];
+    }
+    inputFile.close();
+}
+
+void MatrixObj::splitAMatrixIntoLU(){
+    for(std::size_t i = 0; i<n; i++)
+        for (std::size_t j = 0; j < n; ++j) {
+            if(i>j){L[i*n+j] = A[i*n+j]; U[i*n+j] = 0.0;}
+                else  if(i==j){L[i*n+j] = 1.0;
+                                U[i*n+j] = A[i*n+j];}
+            else {U[i*n+j] = A[i*n+j];}
+        }
+
+}

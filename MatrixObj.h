@@ -1,15 +1,13 @@
 #ifndef LU_MATRIXOBJ_H
 #define LU_MATRIXOBJ_H
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include "omp.h"
 #include <random>
 class MatrixObj {
 public:
-    MatrixObj(std::size_t size, std::size_t r){
-        this->r =  r;
-        this->n = size;
-        this->N = size*size;
+    MatrixObj(std::size_t size, std::size_t r):r(r), n(size), N(size*size){
         A = new double[N];
         L = new double[N];
         U = new double[N];
@@ -25,17 +23,24 @@ public:
     };
     void setTestMatrix(); /*Задание тестовой матрицы*/
     void setAllMatrices(); /*Задание рандомной матрицы А = resMatrix и нулевых L,U*/
-    void getMatrix(double *A); /*Геттер для конкретной матрицы*/
-    void getAllMatrices(); /*Геттер для всех матриц*/
+    void setAMatrixFromFile(std::string );
+    void getMatrix(double *A) const; /*Геттер для конкретной матрицы*/
+    void getAllMatrices() const; /*Геттер для всех матриц*/
+
     void runLU(); /*Обычное LU разложение*/
+    void runLU_AllInA(); /*Обычное LU разложение с записью в матрицу А*/
     void runBlockLU(); /*Блочное LU разложение*/
-    void runBlockLUAllInA(); /*Блочное LU разложение с записью в матрицу А*/
+    void runBlockLU_AllInA(); /*Блочное LU разложение с записью в матрицу А*/
+    void Parallel_runBlockLU_AllInA(); /*Параллельное блочное LU разложение с записью в матрицу А*/
+
     void matrixMultiplication(); /*Перемножение матриц*/
-    void matrixMultiplicationAllInA(); /*Перемножение матриц LU, когда они записаны в матрицу A*/
-    void countError(); /*Вычисление ошибки initialMatrix - resMatrix*/
+    void matrixMultiplication_AllInA(); /*Перемножение матриц LU, когда они записаны в матрицу A*/
+    void countError() const; /*Вычисление ошибки initialMatrix - resMatrix*/
+    void splitAMatrixIntoLU(); /*Разбиение матрицы А на L и U*/
+
 private:
-    std::size_t n, N; /*n - размерность строки/столбца матрицы, N - n*n*/
-    std::size_t r; /*размер блока*/
+    const std::size_t n, N; /*n - размерность строки/столбца матрицы, N - n*n*/
+    const std::size_t r; /*размер блока*/
     double *A; /*Матрица А*/
     double *L; /*Матрица для L*/
     double *U; /*Матрица для U*/
