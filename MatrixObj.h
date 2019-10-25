@@ -7,7 +7,8 @@
 #include <random>
 class MatrixObj {
 public:
-    MatrixObj(std::size_t size, std::size_t r):r(r), n(size), N(size*size){
+    MatrixObj(std::size_t size, std::size_t r, int amount_of_threads):r(r), n(size),amount_of_threads(amount_of_threads), N(size*size){
+        std::cout << "Amount of threads = " << amount_of_threads << std::endl;
         A = new double[N];
         L = new double[N];
         U = new double[N];
@@ -41,6 +42,7 @@ public:
 private:
     const std::size_t n, N; /*n - размерность строки/столбца матрицы, N - n*n*/
     const std::size_t r; /*размер блока*/
+    const int amount_of_threads; /*число потоков для данной реализации*/
     double *A; /*Матрица А*/
     double *L; /*Матрица для L*/
     double *U; /*Матрица для U*/

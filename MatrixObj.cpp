@@ -188,13 +188,17 @@ void MatrixObj::runBlockLU_AllInA()
 void MatrixObj::Parallel_runBlockLU_AllInA(){
 
     double t1 = omp_get_wtime();
+    omp_set_num_threads(amount_of_threads);
     for (int i = 0; i < n; i += r){
         std::size_t  b = (n - i < r) ?  n - i : r;
 
         /*STEP1: A11 = L11*U11 - basic LU*/
+
         for (int k = 0; k <= b; k++) {
             for (int j = k + 1; j < b; j++) {
+
                 A[(j + i) * n + k + i] /= A[(k + i) * n + k + i];
+
                 for (int p = k + 1; p < b; p++) {
                     A[(j + i) * n + p + i] -= A[(j + i) * n + k + i] * A[(k + i) * n + p + i];
                 }
@@ -206,6 +210,7 @@ void MatrixObj::Parallel_runBlockLU_AllInA(){
         /*STEP2: A12 = L11*U12 - getting U12*/
 
         for (int x = 1; x < b; x++) {
+#pragma omp parallel for
             for (int y = 0; y < rb; y++) {
                 for (int z = 0; z < x; z++) {
                     A[(i + x) * n + i + y + b] -= A[(i + x) * n + i + z] * A[(i + z) * n + i + y + b];
@@ -214,8 +219,8 @@ void MatrixObj::Parallel_runBlockLU_AllInA(){
         }
         /*STEP3: A21 = L21*U11 - getting L21*/
         for (int k = 0; k < b; k++) {
+#pragma omp parallel for
             for (int j = 0; j < rb; j++) {
-
                 for (int p = 0; p < k; p++) {
                     A[(i + b + j) * n + i + k] -= A[(i + b + j) * n + i + p] * A[(i + p) * n + i + k];
                 }
@@ -223,6 +228,7 @@ void MatrixObj::Parallel_runBlockLU_AllInA(){
             }
         }
         /*STEP4: A_special22 = A22 - L21*U21*/
+#pragma omp parallel for collapse(2)
         for (int p = 0; p < rb; p++) {
             for (int k = 0; k < b; k++) {
                 for (int j = 0; j < rb; j++) {
